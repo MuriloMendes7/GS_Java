@@ -9,7 +9,6 @@ public class SensorNutrientesNPT extends FonteDados {
         super();
     }
 
-
     public SensorNutrientesNPT(String idFonte, boolean statusConexao, double nivelNitrogenio, double nivelFosforo, double nivelPotassio) {
         super(idFonte, statusConexao);
         this.nivelNitrogenio = nivelNitrogenio;

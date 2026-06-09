@@ -5,7 +5,6 @@ public class SensorSolo extends FonteDados {
     private double temperaturaSolo;
     private int bateriaSensor;
 
-
     public SensorSolo() {
         super();
     }
@@ -17,12 +16,10 @@ public class SensorSolo extends FonteDados {
         this.bateriaSensor = bateriaSensor;
     }
 
-
     @Override
     public String gerarResumoLeitura() {
         return "Sensor Terra [" + getIdFonte() + "] -> Umidade: " + umidadeSolo + "% | Temp: " + temperaturaSolo + "°C";
     }
-
 
     public double getUmidadeSolo() {
         return umidadeSolo;
@@ -47,8 +44,6 @@ public class SensorSolo extends FonteDados {
     public void setBateriaSensor(int bateriaSensor) {
         this.bateriaSensor = bateriaSensor;
     }
-
-
 
     @Override
     public String toString() {

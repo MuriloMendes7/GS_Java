@@ -3,19 +3,29 @@ package br.com.fiap.entities;
 public class AnaliseAgro {
     private SensorSolo leituraSensor;
     private SatelitesNASA leituraSatelite;
+    private SensorNutrientesNPT leituraNutrientes;
+    private EstacaoMeteorologica leituraEstacao;
     private boolean riscoEstresseHidrico;
     private String insightGerado;
 
-    // Construtor
     public AnaliseAgro(SensorSolo leituraSensor, SatelitesNASA leituraSatelite) {
         this.leituraSensor = leituraSensor;
         this.leituraSatelite = leituraSatelite;
         this.processarInteligenciaDados();
     }
 
+    public AnaliseAgro(SensorSolo leituraSensor, SatelitesNASA leituraSatelite,
+                       SensorNutrientesNPT leituraNutrientes, EstacaoMeteorologica leituraEstacao) {
+        this.leituraSensor = leituraSensor;
+        this.leituraSatelite = leituraSatelite;
+        this.leituraNutrientes = leituraNutrientes;
+        this.leituraEstacao = leituraEstacao;
+        this.processarInteligenciaDados();
+    }
+
     public void processarInteligenciaDados() {
         if (leituraSensor == null || leituraSatelite == null) {
-            this.insightGerado = "Dados insuficientes para análise.";
+            this.insightGerado = "Dados insuficientes para análise básica.";
             this.riscoEstresseHidrico = false;
             return;
         }
@@ -26,26 +36,37 @@ public class AnaliseAgro {
         } else if (leituraSatelite.getAlertaClimatico().toLowerCase().contains("geada")) {
             this.riscoEstresseHidrico = false;
             this.insightGerado = "ATENÇÃO: Previsão de geada detectada por satélite na região.";
+        } else if (leituraNutrientes != null && leituraNutrientes.getNivelNitrogenio() < 20.0) {
+            this.riscoEstresseHidrico = false;
+            this.insightGerado = "Cultura húmida, mas exausta. Nível de Nitrogénio crítico. Recomendada fertirrigação azotada.";
         } else {
             this.riscoEstresseHidrico = false;
             this.insightGerado = "Cultura estável. Condições normais de operação.";
         }
     }
 
-
     public String verificarSaudeEquipamentos() {
-        if (leituraSensor == null || leituraSatelite == null) {
-            return "CRÍTICO: Fontes de dados ausentes.";
-        }
-
         StringBuilder diagnostico = new StringBuilder();
 
-        if (!leituraSensor.isStatusConexao() || !leituraSatelite.isStatusConexao()) {
-            diagnostico.append("⚠️ INFRAESTRUTURA: Existe uma falha de conexão ativa em uma das fontes.\n");
+        if (leituraSensor != null) {
+            if (!leituraSensor.isStatusConexao()) {
+                diagnostico.append("⚠️ INFRAESTRUTURA: Sensor de Solo offline.\n");
+            }
+            if (leituraSensor.getBateriaSensor() < 15) {
+                diagnostico.append("🪫 BATERIA: Sensor do solo [" + leituraSensor.getIdFonte() + "] abaixo de 15%.\n");
+            }
         }
 
-        if (leituraSensor.getBateriaSensor() < 15) {
-            diagnostico.append("🪫 BATERIA: O sensor do solo [" + leituraSensor.getIdFonte() + "] está operando abaixo de 15%. Substituição recomendada.\n");
+        if (leituraSatelite != null && !leituraSatelite.isStatusConexao()) {
+            diagnostico.append("⚠️ INFRAESTRUTURA: Link com satélite decaído.\n");
+        }
+
+        if (leituraNutrientes != null && !leituraNutrientes.isStatusConexao()) {
+            diagnostico.append("⚠️ INFRAESTRUTURA: Sensor Químico NPK sem sinal de rede.\n");
+        }
+
+        if (leituraEstacao != null && !leituraEstacao.isStatusConexao()) {
+            diagnostico.append("⚠️ INFRAESTRUTURA: Estação Meteorológica local desconectada.\n");
         }
 
         if (diagnostico.length() == 0) {
@@ -55,45 +76,47 @@ public class AnaliseAgro {
         return diagnostico.toString().trim();
     }
 
-
-    /**
-     * Calcula dinamicamente o volume recomendado de lâmina de água baseado no déficit de umidade.
-     * Assume-se uma meta ideal de 50% de umidade para o solo em questão.
-     * @return String informando a recomendação de vazão técnica.
-     */
     public String calcularNecessidadeIrrigacao() {
         if (!this.riscoEstresseHidrico || leituraSensor == null) {
-            return "Irrigação Desligada: Nível freático e umidade superficial operando dentro dos conformes.";
+            return "Irrigação Desligada: Condições operacionais dentro dos conformes.";
+        }
+
+        if (leituraEstacao != null && leituraEstacao.getIndicePluviometrico() > 5.0) {
+            return "🇲🇺 IRRIGAÇÃO SUSPENSA: Risco hídrico mitigado por chuva natural detectada pela estação.";
         }
 
         double metaUmidade = 50.0;
         double umidadeAtual = leituraSensor.getUmidadeSolo();
-
-        // Regra simples baseada na diferença para atingir a meta ideal
         double deficit = metaUmidade - umidadeAtual;
-
-        // Simulação de cálculo de litros por metro quadrado baseada no déficit hídrico
         double litrosPorMetroQuadrado = deficit * 1.5;
 
-        return String.format("💧 PLANO DE ATIVAÇÃO: Iniciar aspersores. Necessário aplicar aproximadamente %.1f L/m² para atingir a meta estipulada de %.1f%% de umidade.",
+        return String.format("💧 PLANO DE ATIVAÇÃO: Iniciar aspersores. Aplicar aproximadamente %.1f L/m² para atingir a meta de %.1f%%.",
                 litrosPorMetroQuadrado, metaUmidade);
     }
 
-    // Getters e Setters
     public SensorSolo getLeituraSensor() { return leituraSensor; }
-    public void setLeituraSensor(SensorSolo leituraSensor) { this.leituraSensor = leituraSensor; processarInteligenciaDados(); }
+    public void setLeituraSensor(SensorSolo lecturaSensor) { this.leituraSensor = lecturaSensor; processarInteligenciaDados(); }
+
     public SatelitesNASA getLeituraSatelite() { return leituraSatelite; }
     public void setLeituraSatelite(SatelitesNASA leituraSatelite) { this.leituraSatelite = leituraSatelite; processarInteligenciaDados(); }
+
+    public SensorNutrientesNPT getLeituraNutrientes() { return leituraNutrientes; }
+    public void setLeituraNutrientes(SensorNutrientesNPT leituraNutrientes) { this.leituraNutrientes = leituraNutrientes; processarInteligenciaDados(); }
+
+    public EstacaoMeteorologica getLeituraEstacao() { return leituraEstacao; }
+    public void setLeituraEstacao(EstacaoMeteorologica leituraEstacao) { this.leituraEstacao = leituraEstacao; processarInteligenciaDados(); }
+
     public boolean isRiscoEstresseHidrico() { return riscoEstresseHidrico; }
     public String getInsightGerado() { return insightGerado; }
 
-    // ToString Atualizado
     @Override
     public String toString() {
         return "=== RELATÓRIO AGROSYNC SENTINEL ===\n" +
-                "-> " + (leituraSensor != null ? leituraSensor.gerarResumoLeitura() : "Sem dados do sensor") + "\n" +
+                "-> " + (leituraSensor != null ? leituraSensor.gerarResumoLeitura() : "Sem dados do sensor de solo") + "\n" +
                 "-> " + (leituraSatelite != null ? leituraSatelite.gerarResumoLeitura() : "Sem dados do satélite") + "\n" +
-                "-> [Saúde do Sistema]: " + verificarSaudeEquipamentos() + "\n" +
+                "-> " + (leituraNutrientes != null ? leituraNutrientes.gerarResumoLeitura() : "Sem telemetria química NPK") + "\n" +
+                "-> " + (leituraEstacao != null ? leituraEstacao.gerarResumoLeitura() : "Sem dados climatológicos locais") + "\n" +
+                "-> [Saúde do Sistema]: \n" + verificarSaudeEquipamentos() + "\n" +
                 "-> [Resultado IA] Risco Estresse Hídrico: " + (riscoEstresseHidrico ? "SIM" : "NÃO") + "\n" +
                 "-> [Insight]: " + insightGerado + "\n" +
                 "-> [Automação]: " + calcularNecessidadeIrrigacao() + "\n" +

@@ -8,7 +8,7 @@ public abstract class FonteDados {
     private boolean statusConexao;
 
     public FonteDados() {
-        this.timestamp = LocalDateTime.now(); // Define o momento da criação do dado
+        this.timestamp = LocalDateTime.now();
     }
 
     public FonteDados(String idFonte, boolean statusConexao) {
@@ -17,7 +17,6 @@ public abstract class FonteDados {
         this.statusConexao = statusConexao;
     }
 
-    // Método Abstrato: Cada subclasse decidirá como gerar seu resumo de leitura
     public abstract String gerarResumoLeitura();
 
     public String getIdFonte() {
