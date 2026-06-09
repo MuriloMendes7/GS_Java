@@ -5,7 +5,7 @@ public class SensorSolo extends FonteDados {
     private double temperaturaSolo;
     private int bateriaSensor;
 
-    // Construtores
+
     public SensorSolo() {
         super();
     }
@@ -17,13 +17,13 @@ public class SensorSolo extends FonteDados {
         this.bateriaSensor = bateriaSensor;
     }
 
-    // Implementação do Método Abstrato da Superclasse
+
     @Override
     public String gerarResumoLeitura() {
         return "Sensor Terra [" + getIdFonte() + "] -> Umidade: " + umidadeSolo + "% | Temp: " + temperaturaSolo + "°C";
     }
 
-    // Getters e Setters
+
     public double getUmidadeSolo() {
         return umidadeSolo;
     }
@@ -48,7 +48,8 @@ public class SensorSolo extends FonteDados {
         this.bateriaSensor = bateriaSensor;
     }
 
-    // ToString usando super.toString() para reaproveitar os dados da superclasse
+
+
     @Override
     public String toString() {
         return super.toString() + " | [SensorSolo] Umidade: " + umidadeSolo + "% , Temp Solo: " + temperaturaSolo + "°C, Bateria: " + bateriaSensor + "%";

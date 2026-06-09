@@ -7,12 +7,10 @@ public abstract class FonteDados {
     private LocalDateTime timestamp;
     private boolean statusConexao;
 
-    // Construtor Padrão
     public FonteDados() {
         this.timestamp = LocalDateTime.now(); // Define o momento da criação do dado
     }
 
-    // Construtor Completo
     public FonteDados(String idFonte, boolean statusConexao) {
         this();
         this.idFonte = idFonte;
@@ -22,7 +20,6 @@ public abstract class FonteDados {
     // Método Abstrato: Cada subclasse decidirá como gerar seu resumo de leitura
     public abstract String gerarResumoLeitura();
 
-    // Getters e Setters
     public String getIdFonte() {
         return idFonte;
     }
@@ -47,7 +44,6 @@ public abstract class FonteDados {
         this.statusConexao = statusConexao;
     }
 
-    // ToString
     @Override
     public String toString() {
         return "ID Fonte: " + idFonte +

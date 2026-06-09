@@ -5,7 +5,6 @@ public class SatelitesNASA extends FonteDados {
     private double anomaliaTemperatura;
     private String alertaClimatico;
 
-    // Construtores
     public SatelitesNASA() {
         super();
     }
@@ -17,13 +16,11 @@ public class SatelitesNASA extends FonteDados {
         this.alertaClimatico = alertaClimatico;
     }
 
-    // Implementação do Método Abstrato da Superclasse
     @Override
     public String gerarResumoLeitura() {
         return "Satélite NASA [" + getIdFonte() + "] -> NDVI (Vegetação): " + indiceVegetacao + " | Alerta: " + alertaClimatico;
     }
 
-    // Getters e Setters
     public double getIndiceVegetacao() {
         return indiceVegetacao;
     }
@@ -48,7 +45,6 @@ public class SatelitesNASA extends FonteDados {
         this.alertaClimatico = alertaClimatico;
     }
 
-    // ToString
     @Override
     public String toString() {
         return super.toString() + " | [SatellitesNASA] NDVI: " + indiceVegetacao + ", Anomalia Térmica: " + anomaliaTemperatura + ", Alerta: " + alertaClimatico;

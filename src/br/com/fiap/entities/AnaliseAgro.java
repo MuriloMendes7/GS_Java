@@ -32,10 +32,7 @@ public class AnaliseAgro {
         }
     }
 
-    /**
-     * Valida a integridade dos hardwares e conexões de rede antes de consolidar os dados.
-     * @return String contendo o diagnóstico de saúde do ecossistema IoT.
-     */
+
     public String verificarSaudeEquipamentos() {
         if (leituraSensor == null || leituraSatelite == null) {
             return "CRÍTICO: Fontes de dados ausentes.";
